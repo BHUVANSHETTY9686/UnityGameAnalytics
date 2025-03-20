@@ -4,8 +4,12 @@ import os
 import json
 from datetime import datetime
 import uuid
+import logging
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+app.logger.info(f"Flask version: {Flask.__version__}")
+app.logger.info("Starting Unity Game Analytics API")
 
 # Helper function to get database connection
 def get_db_connection():
@@ -65,6 +69,7 @@ init_db()
 # Home route
 @app.route('/')
 def home():
+    app.logger.info("Home route accessed")
     return jsonify({
         "message": "Welcome to Unity Game Analytics API",
         "version": "1.0.0"
@@ -73,6 +78,7 @@ def home():
 # Sessions routes
 @app.route('/api/sessions/start', methods=['POST'])
 def start_session():
+    app.logger.info("Session start route accessed")
     data = request.json
     
     if not data or 'player_id' not in data:
@@ -104,6 +110,7 @@ def start_session():
 
 @app.route('/api/sessions/end', methods=['POST'])
 def end_session():
+    app.logger.info("Session end route accessed")
     data = request.json
     
     if not data or 'session_id' not in data:
@@ -156,6 +163,7 @@ def end_session():
 # Events routes
 @app.route('/api/events', methods=['POST'])
 def create_event():
+    app.logger.info("Event creation route accessed")
     data = request.json
     
     if not data or 'session_id' not in data or 'event_type' not in data or 'event_name' not in data:
@@ -208,6 +216,7 @@ def create_event():
 
 @app.route('/api/events/batch', methods=['POST'])
 def create_events_batch():
+    app.logger.info("Batch event creation route accessed")
     data = request.json
     
     if not data or 'events' not in data or not isinstance(data['events'], list):
@@ -260,6 +269,7 @@ def create_events_batch():
 # Metrics routes
 @app.route('/api/metrics', methods=['POST'])
 def create_metric():
+    app.logger.info("Metric creation route accessed")
     data = request.json
     
     if not data or 'session_id' not in data or 'metric_name' not in data or 'metric_value' not in data:
@@ -306,6 +316,7 @@ def create_metric():
 
 @app.route('/api/metrics/batch', methods=['POST'])
 def create_metrics_batch():
+    app.logger.info("Batch metric creation route accessed")
     data = request.json
     
     if not data or 'metrics' not in data or not isinstance(data['metrics'], list):
@@ -356,3 +367,6 @@ def create_metrics_batch():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     app.run(debug=True, host='0.0.0.0', port=port)
+else:
+    # This block runs when the app is imported by a WSGI server
+    app.logger.info("Running as imported module - likely under WSGI")

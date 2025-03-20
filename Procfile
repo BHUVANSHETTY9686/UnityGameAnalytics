@@ -1,1 +1,1 @@
-web: gunicorn app_flask:app
+web: gunicorn --log-level debug app_flask:app
